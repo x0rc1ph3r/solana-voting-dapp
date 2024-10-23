@@ -14,6 +14,8 @@ describe('Voting', () => {
   let context;
   let provider;
   let votingProgram: Program<Voting>;
+  // anchor.setProvider(anchor.AnchorProvider.env());
+  // let votingProgram: Program<Voting> = anchor.workspace.Voting;
 
   beforeAll(async () => {
     context = await startAnchor("", [{ name: "voting", programId: votingAddress }], []);
@@ -50,52 +52,52 @@ describe('Voting', () => {
 
   it('Initialize Candidate', async () => {
     await votingProgram.methods.initializeCandidate(
-      "Farman",
+      "Smooth",
       new anchor.BN(1),
     ).rpc();
+
+    const [smoothAddress] = PublicKey.findProgramAddressSync(
+      [new anchor.BN(1).toArrayLike(Buffer, 'le', 8), Buffer.from("Smooth")],
+      votingAddress
+    )
+
+    const smoothCandidate = await votingProgram.account.candidate.fetch(smoothAddress);
+
+    console.log(smoothCandidate);
+    expect(smoothCandidate.candidateVotes.toNumber()).toEqual(0);
+    expect(smoothCandidate.candidateName).toEqual("Smooth");
+
     await votingProgram.methods.initializeCandidate(
-      "Suhana",
+      "Crunchy",
       new anchor.BN(1),
     ).rpc();
 
-    const [farmanAddress] = PublicKey.findProgramAddressSync(
-      [new anchor.BN(1).toArrayLike(Buffer, 'le', 8), Buffer.from("Farman")],
+    const [crunchyAddress] = PublicKey.findProgramAddressSync(
+      [new anchor.BN(1).toArrayLike(Buffer, 'le', 8), Buffer.from("Crunchy")],
       votingAddress
     )
 
-    const farmanCandidate = await votingProgram.account.candidate.fetch(farmanAddress);
+    const crunchyCandidate = await votingProgram.account.candidate.fetch(crunchyAddress);
 
-    console.log(farmanCandidate);
-    expect(farmanCandidate.candidateVotes.toNumber()).toEqual(0);
-    expect(farmanCandidate.candidateName).toEqual("Farman");
-
-
-    const [suhanaAddress] = PublicKey.findProgramAddressSync(
-      [new anchor.BN(1).toArrayLike(Buffer, 'le', 8), Buffer.from("Suhana")],
-      votingAddress
-    )
-
-    const suhanaCandidate = await votingProgram.account.candidate.fetch(suhanaAddress);
-
-    console.log(suhanaCandidate);
-    expect(suhanaCandidate.candidateVotes.toNumber()).toEqual(0);
-    expect(suhanaCandidate.candidateName).toEqual("Suhana");
+    console.log(crunchyCandidate);
+    expect(crunchyCandidate.candidateVotes.toNumber()).toEqual(0);
+    expect(crunchyCandidate.candidateName).toEqual("Crunchy");
   })
 
   it('Vote', async () => {
     await votingProgram.methods.vote(
-      "Farman",
+      "Crunchy",
       new anchor.BN(1),
     ).rpc();
 
-    const [farmanAddress] = PublicKey.findProgramAddressSync(
-      [new anchor.BN(1).toArrayLike(Buffer, 'le', 8), Buffer.from("Farman")],
+    const [crunchyAddress] = PublicKey.findProgramAddressSync(
+      [new anchor.BN(1).toArrayLike(Buffer, 'le', 8), Buffer.from("Crunchy")],
       votingAddress
     )
 
-    const farmanCandidate = await votingProgram.account.candidate.fetch(farmanAddress);
+    const crunchyCandidate = await votingProgram.account.candidate.fetch(crunchyAddress);
 
-    console.log(farmanCandidate);
-    expect(farmanCandidate.candidateVotes.toNumber()).toEqual(1);
+    console.log(crunchyCandidate);
+    expect(crunchyCandidate.candidateVotes.toNumber()).toEqual(1);
   })
 })
