@@ -95,7 +95,7 @@ pub struct InitialzeCandidate<'info> {
     pub poll: Account<'info, Poll>,
 
     #[account(
-        init_if_needed,
+        init,
         payer = signer,
         space = 8 + Candidate::INIT_SPACE,
         seeds = [poll_id.to_le_bytes().as_ref(), candidate_name.as_bytes()],
